@@ -4442,6 +4442,9 @@ compiler_visit_expr(struct compiler *c, expr_ty e)
     /* Updating the column offset is always harmless. */
     c->u->u_col_offset = e->col_offset;
     switch (e->kind) {
+    case AssExpr_kind:
+        VISIT(c, expr, e->v.AssExpr.value);
+        break;
     case BoolOp_kind:
         return compiler_boolop(c, e);
     case BinOp_kind:
