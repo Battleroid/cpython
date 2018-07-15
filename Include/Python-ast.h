@@ -204,15 +204,16 @@ struct _stmt {
     int col_offset;
 };
 
-enum _expr_kind {BoolOp_kind=1, BinOp_kind=2, UnaryOp_kind=3, Lambda_kind=4,
-                  IfExp_kind=5, Dict_kind=6, Set_kind=7, ListComp_kind=8,
-                  SetComp_kind=9, DictComp_kind=10, GeneratorExp_kind=11,
-                  Await_kind=12, Yield_kind=13, YieldFrom_kind=14,
-                  Compare_kind=15, Call_kind=16, Num_kind=17, Str_kind=18,
-                  FormattedValue_kind=19, JoinedStr_kind=20, Bytes_kind=21,
-                  NameConstant_kind=22, Ellipsis_kind=23, Constant_kind=24,
-                  Attribute_kind=25, Subscript_kind=26, Starred_kind=27,
-                  Name_kind=28, List_kind=29, Tuple_kind=30};
+enum _expr_kind {BoolOp_kind=1, AssExpr_kind=2, BinOp_kind=3, UnaryOp_kind=4,
+                  Lambda_kind=5, IfExp_kind=6, Dict_kind=7, Set_kind=8,
+                  ListComp_kind=9, SetComp_kind=10, DictComp_kind=11,
+                  GeneratorExp_kind=12, Await_kind=13, Yield_kind=14,
+                  YieldFrom_kind=15, Compare_kind=16, Call_kind=17,
+                  Num_kind=18, Str_kind=19, FormattedValue_kind=20,
+                  JoinedStr_kind=21, Bytes_kind=22, NameConstant_kind=23,
+                  Ellipsis_kind=24, Constant_kind=25, Attribute_kind=26,
+                  Subscript_kind=27, Starred_kind=28, Name_kind=29,
+                  List_kind=30, Tuple_kind=31};
 struct _expr {
     enum _expr_kind kind;
     union {
@@ -220,6 +221,11 @@ struct _expr {
             boolop_ty op;
             asdl_seq *values;
         } BoolOp;
+
+        struct {
+            expr_ty target;
+            expr_ty value;
+        } AssExpr;
 
         struct {
             expr_ty left;
@@ -524,6 +530,9 @@ stmt_ty _Py_Continue(int lineno, int col_offset, PyArena *arena);
 #define BoolOp(a0, a1, a2, a3, a4) _Py_BoolOp(a0, a1, a2, a3, a4)
 expr_ty _Py_BoolOp(boolop_ty op, asdl_seq * values, int lineno, int col_offset,
                    PyArena *arena);
+#define AssExpr(a0, a1, a2, a3, a4) _Py_AssExpr(a0, a1, a2, a3, a4)
+expr_ty _Py_AssExpr(expr_ty target, expr_ty value, int lineno, int col_offset,
+                    PyArena *arena);
 #define BinOp(a0, a1, a2, a3, a4, a5) _Py_BinOp(a0, a1, a2, a3, a4, a5)
 expr_ty _Py_BinOp(expr_ty left, operator_ty op, expr_ty right, int lineno, int
                   col_offset, PyArena *arena);
