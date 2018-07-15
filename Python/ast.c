@@ -1691,6 +1691,22 @@ ast_for_decorated(struct compiling *c, const node *n)
 }
 
 static expr_ty
+ast_for_ass_expr(struct compiling *c, const node *n)
+{
+    expr_ty expr1, expr2;
+
+    expr1 = ast_for_expr(c, CHILD(n, 0));
+    if (!expr1)
+        return NULL;
+
+    expr2 = ast_for_expr(c, CHILD(n, 2));
+    if (!expr2)
+        return NULL;
+
+    return AssExpr(expr1, expr2, LINENO(n), n->n_col_offset, c->c_arena);
+}
+
+static expr_ty
 ast_for_lambdef(struct compiling *c, const node *n)
 {
     /* lambdef: 'lambda' [varargslist] ':' test
@@ -2533,6 +2549,7 @@ static expr_ty
 ast_for_expr(struct compiling *c, const node *n)
 {
     /* handle the full range of simple expressions
+       ass_test: test [':=' test]
        test: or_test ['if' or_test 'else' test] | lambdef
        test_nocond: or_test | lambdef_nocond
        or_test: and_test ('or' and_test)*
@@ -2556,6 +2573,10 @@ ast_for_expr(struct compiling *c, const node *n)
 
  loop:
     switch (TYPE(n)) {
+        case ass_test:
+            if (NCH(n) == 3)
+                return ast_for_ass_expr(c, n);
+            /* Fallthrough */
         case test:
         case test_nocond:
             if (TYPE(CHILD(n, 0)) == lambdef ||
