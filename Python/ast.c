@@ -1693,17 +1693,20 @@ ast_for_decorated(struct compiling *c, const node *n)
 static expr_ty
 ast_for_ass_expr(struct compiling *c, const node *n)
 {
-    expr_ty expr1, expr2;
+    expr_ty target, value;
 
-    expr1 = ast_for_expr(c, CHILD(n, 0));
-    if (!expr1)
+    target = ast_for_expr(c, CHILD(n, 0));
+    if (!target)
         return NULL;
 
-    expr2 = ast_for_expr(c, CHILD(n, 2));
-    if (!expr2)
+    value = ast_for_expr(c, CHILD(n, 2));
+    if (!value)
         return NULL;
 
-    return AssExpr(expr1, expr2, LINENO(n), n->n_col_offset, c->c_arena);
+    if(!set_context(c, target, Store, n))
+        return NULL;
+
+    return AssExpr(target, value, LINENO(n), n->n_col_offset, c->c_arena);
 }
 
 static expr_ty

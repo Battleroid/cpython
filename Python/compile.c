@@ -4444,6 +4444,8 @@ compiler_visit_expr(struct compiler *c, expr_ty e)
     switch (e->kind) {
     case AssExpr_kind:
         VISIT(c, expr, e->v.AssExpr.value);
+        ADDOP(c, DUP_TOP);
+        VISIT(c, expr, e->v.AssExpr.target);
         break;
     case BoolOp_kind:
         return compiler_boolop(c, e);
