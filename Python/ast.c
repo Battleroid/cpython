@@ -3058,7 +3058,7 @@ ast_for_expr_stmt(struct compiling *c, const node *n)
               return NULL;
 
             /* set context to assign */
-            if (!set_context(c, e, Store, CHILD(n, i)))
+            if (!set_context(c, e, Store, ch))
               return NULL;
 
             asdl_seq_SET(targets, i / 2, e);
